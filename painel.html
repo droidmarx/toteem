@@ -11,46 +11,47 @@
       background: linear-gradient(160deg, #0f2027, #203a43, #2c5364);
       color: white;
       min-height: 100vh;
-      overflow: hidden;
+      overflow-x: hidden;
       display: flex;
       flex-direction: column;
     }
     .top-bar {
       background: rgba(0,0,0,0.35);
-      padding: 18px 30px;
+      padding: 14px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid rgba(255,255,255,0.1);
+      flex-shrink: 0;
     }
     .brand {
       display: flex;
       align-items: center;
-      gap: 15px;
+      gap: 12px;
     }
     .brand-icon {
-      width: 48px;
-      height: 48px;
+      width: 42px;
+      height: 42px;
       background: linear-gradient(135deg, #f9c74f, #90be6d, #4d908e, #577590, #9b5de5);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
-      font-size: 1.4rem;
+      font-size: 1.2rem;
     }
     .brand-text h1 {
-      font-size: 1.5rem;
+      font-size: 1.35rem;
       font-weight: 700;
     }
     .brand-text p {
-      font-size: 0.8rem;
+      font-size: 0.7rem;
       opacity: 0.7;
       text-transform: uppercase;
       letter-spacing: 1px;
     }
     .clock {
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       font-weight: 500;
       font-variant-numeric: tabular-nums;
     }
@@ -60,90 +61,65 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 40px 20px;
-      position: relative;
+      padding: 20px 16px 10px;
+      min-height: 0;
     }
     .label {
-      font-size: 1.4rem;
+      font-size: 1.15rem;
       letter-spacing: 3px;
       text-transform: uppercase;
       opacity: 0.7;
-      margin-bottom: 20px;
+      margin-bottom: 12px;
     }
     .senha-box {
       background: rgba(255,255,255,0.08);
       border: 3px solid rgba(255,255,255,0.2);
-      border-radius: 30px;
-      padding: 40px 80px;
+      border-radius: 24px;
+      padding: 28px 50px;
       text-align: center;
-      min-width: 420px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      min-width: 360px;
+      max-width: 95vw;
+      box-shadow: 0 16px 50px rgba(0,0,0,0.4);
       transition: all 0.4s ease;
     }
     .senha-box.highlight {
       border-color: #4caf50;
-      box-shadow: 0 0 40px rgba(76,175,80,0.4), 0 20px 60px rgba(0,0,0,0.4);
+      box-shadow: 0 0 40px rgba(76,175,80,0.45), 0 16px 50px rgba(0,0,0,0.4);
       transform: scale(1.03);
     }
     .numero {
-      font-size: 7rem;
+      font-size: clamp(3.5rem, 12vw, 6.5rem);
       font-weight: 800;
-      letter-spacing: 8px;
+      letter-spacing: 6px;
       line-height: 1;
-      margin: 10px 0;
+      margin: 8px 0;
       text-shadow: 0 4px 20px rgba(0,0,0,0.3);
     }
     .tipo {
-      font-size: 1.5rem;
+      font-size: clamp(1rem, 3vw, 1.4rem);
       font-weight: 600;
       color: #90caf9;
-      margin-top: 10px;
-      max-width: 500px;
+      margin-top: 8px;
+      max-width: 480px;
     }
     .guiche-info {
-      margin-top: 30px;
-      font-size: 2.2rem;
+      margin-top: 18px;
+      font-size: clamp(1.3rem, 4vw, 2rem);
       font-weight: 700;
       display: flex;
       align-items: center;
-      gap: 15px;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
     }
     .guiche-badge {
       background: #e94560;
-      padding: 8px 28px;
+      padding: 6px 22px;
       border-radius: 50px;
-      font-size: 1.8rem;
-    }
-    .historico {
-      position: absolute;
-      bottom: 30px;
-      left: 0;
-      right: 0;
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
-      padding: 0 20px;
-    }
-    .hist-item {
-      background: rgba(0,0,0,0.3);
-      border-radius: 12px;
-      padding: 12px 22px;
-      text-align: center;
-      min-width: 140px;
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-    .hist-item .n {
-      font-size: 1.6rem;
-      font-weight: 700;
-    }
-    .hist-item .g {
-      font-size: 0.85rem;
-      opacity: 0.7;
-      margin-top: 2px;
+      font-size: clamp(1.2rem, 3.5vw, 1.7rem);
     }
     .sem-senha {
-      font-size: 2rem;
+      font-size: 1.6rem;
       opacity: 0.5;
     }
     .pulse {
@@ -151,7 +127,81 @@
     }
     @keyframes pulse {
       0%, 100% { opacity: 1; }
-      50% { opacity: 0.6; }
+      50% { opacity: 0.55; }
+    }
+
+    /* Histórico por tipo */
+    .historico-section {
+      flex-shrink: 0;
+      padding: 12px 16px 20px;
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .historico-title {
+      text-align: center;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.6;
+      margin-bottom: 12px;
+    }
+    .historico-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 900px) {
+      .historico-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 500px) {
+      .historico-grid { grid-template-columns: 1fr; }
+    }
+    .hist-card {
+      background: rgba(0,0,0,0.28);
+      border-radius: 12px;
+      padding: 12px 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .hist-card h3 {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      opacity: 0.85;
+      line-height: 1.3;
+      min-height: 2.4em;
+    }
+    .hist-card.green h3 { color: #81c784; }
+    .hist-card.dark h3 { color: #a5d6a7; }
+    .hist-card.orange h3 { color: #ffb74d; }
+    .hist-card.purple h3 { color: #9fa8da; }
+    .hist-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .hist-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+      background: rgba(255,255,255,0.06);
+      border-radius: 6px;
+      padding: 4px 8px;
+    }
+    .hist-row .num {
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    .hist-row .g {
+      font-size: 0.75rem;
+      opacity: 0.7;
+    }
+    .hist-empty {
+      font-size: 0.8rem;
+      opacity: 0.4;
+      font-style: italic;
     }
   </style>
 </head>
@@ -169,26 +219,116 @@
 
   <div class="main">
     <div class="label">Senha chamada</div>
-
     <div class="senha-box" id="senhaBox">
       <div id="conteudo">
         <div class="sem-senha">Aguardando chamada...</div>
       </div>
     </div>
+  </div>
 
-    <div class="historico" id="historico"></div>
+  <div class="historico-section">
+    <div class="historico-title">Últimos 5 atendimentos por tipo</div>
+    <div class="historico-grid" id="historicoGrid">
+      <!-- preenchido via JS -->
+    </div>
   </div>
 
   <script>
     const API = 'https://698deef5aded595c25308e9f.mockapi.io/Senhas';
     let ultimaChamadaId = null;
-    let historico = [];
+
+    // Histórico por tipo (máx 5 cada)
+    const historicoPorTipo = {
+      'TERAPIAS/CONSULTAS AGENDADAS': [],
+      'AGENDAMENTO DE CONSULTAS': [],
+      'SOLICITAÇÃO DE LAUDOS E RECEITAS': [],
+      'SERVIÇO SOCIAL': []
+    };
+
+    const coresTipo = {
+      'TERAPIAS/CONSULTAS AGENDADAS': 'green',
+      'AGENDAMENTO DE CONSULTAS': 'dark',
+      'SOLICITAÇÃO DE LAUDOS E RECEITAS': 'orange',
+      'SERVIÇO SOCIAL': 'purple'
+    };
 
     // Neste projeto o MockAPI retorna "Id" (maiúsculo)
     function getId(item) {
       return item.Id || item.id;
     }
 
+    // ========== SOM POR TIPO ==========
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playTone(freq, duration, startTime, type = 'sine', volume = 0.35) {
+      const ctx = getAudioContext();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(volume, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(startTime);
+      osc.stop(startTime + duration);
+    }
+
+    function tocarSom(tipo) {
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+
+        switch (tipo) {
+          case 'TERAPIAS/CONSULTAS AGENDADAS':
+            // 3 tons ascendentes suaves (verde)
+            playTone(523, 0.18, now, 'sine', 0.3);        // C5
+            playTone(659, 0.18, now + 0.2, 'sine', 0.3);   // E5
+            playTone(784, 0.28, now + 0.4, 'sine', 0.35);  // G5
+            break;
+
+          case 'AGENDAMENTO DE CONSULTAS':
+            // 2 tons médios
+            playTone(440, 0.22, now, 'triangle', 0.35);      // A4
+            playTone(554, 0.3, now + 0.25, 'triangle', 0.35); // C#5
+            break;
+
+          case 'SOLICITAÇÃO DE LAUDOS E RECEITAS':
+            // Tom mais agudo + eco
+            playTone(880, 0.15, now, 'square', 0.22);       // A5
+            playTone(880, 0.15, now + 0.2, 'square', 0.18);
+            playTone(988, 0.25, now + 0.4, 'square', 0.25); // B5
+            break;
+
+          case 'SERVIÇO SOCIAL':
+            // 4 notes (mais chamativo)
+            playTone(392, 0.15, now, 'sine', 0.3);          // G4
+            playTone(494, 0.15, now + 0.16, 'sine', 0.3);   // B4
+            playTone(587, 0.15, now + 0.32, 'sine', 0.3);   // D5
+            playTone(784, 0.3, now + 0.48, 'sine', 0.35);   // G5
+            break;
+
+          default:
+            // Som genérico
+            playTone(600, 0.2, now, 'sine', 0.3);
+            playTone(800, 0.25, now + 0.22, 'sine', 0.3);
+        }
+      } catch (e) {
+        console.warn('Não foi possível tocar som:', e);
+      }
+    }
+
+    // ========== RELÓGIO ==========
     function atualizarRelogio() {
       const agora = new Date();
       document.getElementById('clock').textContent = agora.toLocaleTimeString('pt-BR', {
@@ -198,15 +338,64 @@
     setInterval(atualizarRelogio, 1000);
     atualizarRelogio();
 
+    // ========== HISTÓRICO ==========
+    function renderHistorico() {
+      const grid = document.getElementById('historicoGrid');
+      const tipos = Object.keys(historicoPorTipo);
+
+      grid.innerHTML = tipos.map(tipo => {
+        const itens = historicoPorTipo[tipo];
+        const cor = coresTipo[tipo] || '';
+        const nomeCurto = tipo.length > 28 ? tipo.substring(0, 26) + '…' : tipo;
+
+        let listaHtml;
+        if (itens.length === 0) {
+          listaHtml = '<div class="hist-empty">Nenhum ainda</div>';
+        } else {
+          listaHtml = '<div class="hist-list">' + itens.map(h => `
+            <div class="hist-row">
+              <span class="num">${String(h.numero).padStart(4, '0')}</span>
+              <span class="g">Guichê ${h.guiche}</span>
+            </div>
+          `).join('') + '</div>';
+        }
+
+        return `
+          <div class="hist-card ${cor}">
+            <h3>${nomeCurto}</h3>
+            ${listaHtml}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function adicionarAoHistorico(chamada) {
+      const tipo = chamada.tipo;
+      if (!historicoPorTipo[tipo]) {
+        historicoPorTipo[tipo] = [];
+      }
+      // Evita duplicata
+      if (historicoPorTipo[tipo].some(h => h.numero === chamada.numero && h.guiche === chamada.guiche)) {
+        return;
+      }
+      historicoPorTipo[tipo].unshift({
+        numero: chamada.numero,
+        guiche: chamada.guiche
+      });
+      if (historicoPorTipo[tipo].length > 5) {
+        historicoPorTipo[tipo].pop();
+      }
+      renderHistorico();
+    }
+
+    // ========== BUSCA DE CHAMADAS ==========
     async function buscarUltimaChamada() {
       try {
-        // Busca senhas com status "chamado", ordenadas pela mais recente
         const res = await fetch(API + '?status=chamado&sortBy=chamadoEm&order=desc');
         if (!res.ok) return;
         const data = await res.json();
 
         if (data.length === 0) {
-          // Se não tem nenhuma chamada ativa, mostra mensagem
           if (!ultimaChamadaId) {
             document.getElementById('conteudo').innerHTML = '<div class="sem-senha">Aguardando chamada...</div>';
             document.getElementById('senhaBox').classList.remove('highlight');
@@ -214,14 +403,13 @@
           return;
         }
 
-        // Pega a mais recente
         const chamada = data[0];
         const chamadaId = getId(chamada);
 
         if (chamadaId !== ultimaChamadaId) {
           ultimaChamadaId = chamadaId;
 
-          // Atualiza o painel principal
+          // Atualiza painel
           document.getElementById('conteudo').innerHTML = `
             <div class="numero pulse">${String(chamada.numero).padStart(4, '0')}</div>
             <div class="tipo">${chamada.tipo}</div>
@@ -233,35 +421,72 @@
 
           const box = document.getElementById('senhaBox');
           box.classList.add('highlight');
-          setTimeout(() => box.classList.remove('highlight'), 3000);
+          setTimeout(() => box.classList.remove('highlight'), 3500);
 
-          // Adiciona ao histórico (mantém últimos 4)
-          historico.unshift({
-            numero: chamada.numero,
-            guiche: chamada.guiche,
-            tipo: chamada.tipo
-          });
-          if (historico.length > 4) historico.pop();
-          renderHistorico();
+          // Toca som específico do tipo
+          tocarSom(chamada.tipo);
+
+          // Adiciona ao histórico
+          adicionarAoHistorico(chamada);
         }
       } catch (e) {
         console.warn('Erro ao buscar chamada', e);
       }
     }
 
-    function renderHistorico() {
-      const el = document.getElementById('historico');
-      el.innerHTML = historico.map(h => `
-        <div class="hist-item">
-          <div class="n">${String(h.numero).padStart(4, '0')}</div>
-          <div class="g">Guichê ${h.guiche}</div>
-        </div>
-      `).join('');
+    // Carrega histórico inicial (últimas chamadas já existentes)
+    async function carregarHistoricoInicial() {
+      try {
+        const res = await fetch(API + '?status=chamado&sortBy=chamadoEm&order=desc&limit=40');
+        if (!res.ok) return;
+        let data = await res.json();
+
+        // Também busca atendidos recentes para o histórico
+        const res2 = await fetch(API + '?status=atendido&sortBy=chamadoEm&order=desc&limit=40');
+        if (res2.ok) {
+          const atendidos = await res2.json();
+          data = data.concat(atendidos);
+        }
+
+        // Ordena por chamadoEm desc
+        data.sort((a, b) => {
+          const da = a.chamadoEm || '';
+          const db = b.chamadoEm || '';
+          return db.localeCompare(da);
+        });
+
+        // Preenche histórico (mais recentes primeiro, sem duplicar)
+        const vistos = new Set();
+        for (const item of data) {
+          const key = `${item.tipo}-${item.numero}`;
+          if (vistos.has(key)) continue;
+          vistos.add(key);
+
+          if (!historicoPorTipo[item.tipo]) continue;
+          if (historicoPorTipo[item.tipo].length >= 5) continue;
+
+          historicoPorTipo[item.tipo].push({
+            numero: item.numero,
+            guiche: item.guiche
+          });
+        }
+        renderHistorico();
+      } catch (e) {
+        console.warn('Erro ao carregar histórico inicial', e);
+        renderHistorico();
+      }
     }
 
-    // Polling a cada 2 segundos
+    // Inicialização
+    renderHistorico();
+    carregarHistoricoInicial();
     buscarUltimaChamada();
     setInterval(buscarUltimaChamada, 2000);
+
+    // Alguns navegadores bloqueiam áudio até interação do usuário
+    document.body.addEventListener('click', () => {
+      getAudioContext();
+    }, { once: true });
   </script>
 </body>
 </html>
