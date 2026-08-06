@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Totem - Somos do Bem</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f0f2f5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      color: #333;
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .logo-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #f9c74f, #90be6d, #4d908e, #577590, #9b5de5);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 1.4rem;
+    }
+    .logo-text {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #222;
+    }
+    .logo-sub {
+      font-size: 0.75rem;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 30px 25px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+      width: 100%;
+      max-width: 420px;
+    }
+    .title {
+      text-align: center;
+      font-size: 1.25rem;
+      color: #444;
+      margin-bottom: 25px;
+      font-weight: 600;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: white;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .btn-green  { background: #2e7d32; }
+    .btn-dark   { background: #1b3a1b; }
+    .btn-orange { background: #e67e22; }
+    .btn-purple { background: #5c6bc0; }
+    .ticket-preview {
+      display: none;
+      margin-top: 25px;
+      padding: 20px;
+      background: #fafafa;
+      border: 2px dashed #ccc;
+      border-radius: 12px;
+      text-align: center;
+      animation: fadeIn 0.4s ease;
+    }
+    .ticket-preview.show { display: block; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .ticket-preview .tipo {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    .ticket-preview .numero {
+      font-size: 3rem;
+      font-weight: 800;
+      color: #111;
+      letter-spacing: 4px;
+      margin: 10px 0;
+    }
+    .ticket-preview .info {
+      font-size: 0.9rem;
+      color: #666;
+    }
+    .status {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 0.9rem;
+      color: #2e7d32;
+      min-height: 24px;
+    }
+    .footer {
+      margin-top: 25px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">S</div>
+      <div>
+        <div class="logo-text">Somos do Bem</div>
+        <div class="logo-sub">Associação Beneficente</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="title">Selecione a fila</div>
+
+    <button class="btn btn-green"  onclick="gerarSenha('TERAPIAS/CONSULTAS AGENDADAS')">
+      TERAPIAS/CONSULTAS AGENDADAS
+    </button>
+    <button class="btn btn-dark"   onclick="gerarSenha('AGENDAMENTO DE CONSULTAS')">
+      AGENDAMENTO DE CONSULTAS
+    </button>
+    <button class="btn btn-orange" onclick="gerarSenha('SOLICITAÇÃO DE LAUDOS E RECEITAS')">
+      SOLICITAÇÃO DE LAUDOS E RECEITAS
+    </button>
+    <button class="btn btn-purple" onclick="gerarSenha('SERVIÇO SOCIAL')">
+      SERVIÇO SOCIAL
+    </button>
+
+    <div id="ticketPreview" class="ticket-preview">
+      <div class="tipo" id="previewTipo"></div>
+      <div class="numero" id="previewNumero"></div>
+      <div class="info" id="previewInfo"></div>
+    </div>
+
+    <div class="status" id="statusMsg"></div>
+  </div>
+
+  <div class="footer">
+    SisHOSP · Sistema de Senhas
+  </div>
+
+  <script>
+    const API = 'https://698deef5aded595c25308ea0.mockapi.io/senhas';
+
+    // Contador local por tipo (fallback se API falhar no GET)
+    const contadores = {
+      'TERAPIAS/CONSULTAS AGENDADAS': 1000,
+      'AGENDAMENTO DE CONSULTAS': 2000,
+      'SOLICITAÇÃO DE LAUDOS E RECEITAS': 3000,
+      'SERVIÇO SOCIAL': 4000
+    };
+
+    async function obterProximoNumero(tipo) {
+      try {
+        const res = await fetch(`${API}?tipo=${encodeURIComponent(tipo)}&sortBy=numero&order=desc`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.length > 0) {
+            return Number(data[0].numero) + 1;
+          }
+        }
+      } catch (e) {
+        console.warn('API offline, usando contador local');
+      }
+      // Fallback local
+      contadores[tipo] = (contadores[tipo] || 1000) + 1;
+      return contadores[tipo];
+    }
+
+    async function gerarSenha(tipo) {
+      const btns = document.querySelectorAll('.btn');
+      btns.forEach(b => b.disabled = true);
+      document.getElementById('statusMsg').textContent = 'Gerando senha...';
+
+      try {
+        const numero = await obterProximoNumero(tipo);
+        const agora = new Date();
+        const dataHora = agora.toLocaleString('pt-BR', {
+          day: '2-digit', month: '2-digit', year: 'numeric',
+          hour: '2-digit', minute: '2-digit'
+        });
+
+        const payload = {
+          numero: numero,
+          tipo: tipo,
+          status: 'aguardando',
+          guiche: null,
+          createdAt: agora.toISOString(),
+          chamadoEm: null
+        };
+
+        const res = await fetch(API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) throw new Error('Erro ao salvar na API');
+
+        const senha = await res.json();
+
+        // Mostra o ticket
+        document.getElementById('previewTipo').textContent = tipo;
+        document.getElementById('previewNumero').textContent = String(numero).padStart(4, '0');
+        document.getElementById('previewInfo').textContent = `${dataHora} · SisHOSP`;
+        document.getElementById('ticketPreview').classList.add('show');
+        document.getElementById('statusMsg').textContent = 'Senha gerada com sucesso!';
+
+        // Simula impressão
+        console.log('=== SENHA IMPRESSA ===');
+        console.log(tipo);
+        console.log(String(numero).padStart(4, '0'));
+        console.log(dataHora);
+
+      } catch (err) {
+        console.error(err);
+        document.getElementById('statusMsg').textContent = 'Erro ao gerar senha. Verifique a API.';
+        document.getElementById('statusMsg').style.color = '#c62828';
+      } finally {
+        btns.forEach(b => b.disabled = false);
+        setTimeout(() => {
+          document.getElementById('statusMsg').textContent = '';
+          document.getElementById('statusMsg').style.color = '#2e7d32';
+        }, 4000);
+      }
+    }
+  </script>
+</body>
+</html>

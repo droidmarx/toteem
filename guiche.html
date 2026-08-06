@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guichês - Somos do Bem</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-top: 10px;
+    }
+    .header h1 {
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: #fff;
+    }
+    .header p {
+      color: #aaa;
+      font-size: 0.9rem;
+      margin-top: 5px;
+    }
+    .guiches {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    @media (max-width: 700px) {
+      .guiches { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: #16213e;
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+      border: 1px solid #0f3460;
+    }
+    .card h2 {
+      font-size: 1.4rem;
+      margin-bottom: 15px;
+      color: #e94560;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card h2 span {
+      background: #e94560;
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+    .info-box {
+      background: #0f3460;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      min-height: 80px;
+    }
+    .info-box .label {
+      font-size: 0.8rem;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .info-box .value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+      margin-top: 5px;
+    }
+    .info-box .tipo {
+      font-size: 0.95rem;
+      color: #90caf9;
+      margin-top: 4px;
+    }
+    .btn-chamar {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      background: #e94560;
+      color: white;
+      font-size: 1.15rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .btn-chamar:hover { background: #c73a52; }
+    .btn-chamar:active { transform: scale(0.98); }
+    .btn-chamar:disabled {
+      background: #555;
+      cursor: not-allowed;
+    }
+    .btn-finalizar {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border: 2px solid #4caf50;
+      border-radius: 12px;
+      background: transparent;
+      color: #4caf50;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-finalizar:hover { background: rgba(76,175,80,0.15); }
+    .btn-finalizar:disabled {
+      border-color: #555;
+      color: #555;
+      cursor: not-allowed;
+    }
+    .fila-info {
+      margin-top: 25px;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+      background: #16213e;
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid #0f3460;
+    }
+    .fila-info h3 {
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      color: #90caf9;
+    }
+    .fila-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .fila-item {
+      background: #0f3460;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      color: #ddd;
+    }
+    .fila-item.prioridade {
+      border: 1px solid #e94560;
+      color: #ff8a80;
+    }
+    .status-bar {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.85rem;
+      color: #888;
+    }
+    .online { color: #4caf50; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Painel dos Guichês</h1>
+    <p>Somos do Bem · Sistema de Atendimento</p>
+  </div>
+
+  <div class="guiches">
+    <!-- Guichê 1 -->
+    <div class="card">
+      <h2><span>1</span> Guichê 1</h2>
+      <div class="info-box">
+        <div class="label">Senha atual</div>
+        <div class="value" id="g1-numero">—</div>
+        <div class="tipo" id="g1-tipo">Nenhuma senha chamada</div>
+      </div>
+      <button class="btn-chamar" id="btn-g1" onclick="chamarProxima(1)">Chamar Próxima</button>
+      <button class="btn-finalizar" id="btn-fin-g1" onclick="finalizar(1)" disabled>Finalizar Atendimento</button>
+    </div>
+
+    <!-- Guichê 2 -->
+    <div class="card">
+      <h2><span>2</span> Guichê 2</h2>
+      <div class="info-box">
+        <div class="label">Senha atual</div>
+        <div class="value" id="g2-numero">—</div>
+        <div class="tipo" id="g2-tipo">Nenhuma senha chamada</div>
+      </div>
+      <button class="btn-chamar" id="btn-g2" onclick="chamarProxima(2)">Chamar Próxima</button>
+      <button class="btn-finalizar" id="btn-fin-g2" onclick="finalizar(2)" disabled>Finalizar Atendimento</button>
+    </div>
+  </div>
+
+  <div class="fila-info">
+    <h3>Fila de espera (<span id="qtd-fila">0</span>)</h3>
+    <div class="fila-list" id="lista-fila">
+      <span style="color:#666">Carregando...</span>
+    </div>
+  </div>
+
+  <div class="status-bar">
+    Status: <span id="api-status" class="online">Conectado</span> · Atualiza a cada 3s
+  </div>
+
+  <script>
+    const API = 'https://698deef5aded595c25308ea0.mockapi.io/senhas';
+    let senhaAtual = { 1: null, 2: null };
+
+    async function fetchSenhas() {
+      try {
+        const res = await fetch(API + '?sortBy=numero&order=asc');
+        if (!res.ok) throw new Error('API error');
+        document.getElementById('api-status').textContent = 'Conectado';
+        document.getElementById('api-status').className = 'online';
+        return await res.json();
+      } catch (e) {
+        document.getElementById('api-status').textContent = 'Offline / Erro';
+        document.getElementById('api-status').className = '';
+        return [];
+      }
+    }
+
+    async function atualizarFila() {
+      const senhas = await fetchSenhas();
+      const aguardando = senhas.filter(s => s.status === 'aguardando');
+      const lista = document.getElementById('lista-fila');
+      document.getElementById('qtd-fila').textContent = aguardando.length;
+
+      if (aguardando.length === 0) {
+        lista.innerHTML = '<span style="color:#666">Nenhuma senha na fila</span>';
+      } else {
+        lista.innerHTML = aguardando.map(s =>
+          `<span class="fila-item">${String(s.numero).padStart(4,'0')} · ${s.tipo.split('/')[0]}</span>`
+        ).join('');
+      }
+
+      // Atualiza painel dos guichês se já tem senha chamada
+      for (let g of [1,2]) {
+        const atual = senhas.find(s => s.guiche == g && s.status === 'chamado');
+        if (atual) {
+          senhaAtual[g] = atual;
+          document.getElementById(`g${g}-numero`).textContent = String(atual.numero).padStart(4,'0');
+          document.getElementById(`g${g}-tipo`).textContent = atual.tipo;
+          document.getElementById(`btn-g${g}`).disabled = true;
+          document.getElementById(`btn-fin-g${g}`).disabled = false;
+        } else if (!senhaAtual[g]) {
+          document.getElementById(`g${g}-numero`).textContent = '—';
+          document.getElementById(`g${g}-tipo`).textContent = 'Nenhuma senha chamada';
+          document.getElementById(`btn-g${g}`).disabled = false;
+          document.getElementById(`btn-fin-g${g}`).disabled = true;
+        }
+      }
+    }
+
+    async function chamarProxima(guiche) {
+      const btn = document.getElementById(`btn-g${guiche}`);
+      btn.disabled = true;
+      btn.textContent = 'Chamando...';
+
+      try {
+        const senhas = await fetchSenhas();
+        const proxima = senhas
+          .filter(s => s.status === 'aguardando')
+          .sort((a,b) => Number(a.numero) - Number(b.numero))[0];
+
+        if (!proxima) {
+          alert('Não há senhas na fila!');
+          btn.disabled = false;
+          btn.textContent = 'Chamar Próxima';
+          return;
+        }
+
+        // Atualiza a senha na API
+        const res = await fetch(`${API}/${proxima.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...proxima,
+            status: 'chamado',
+            guiche: guiche,
+            chamadoEm: new Date().toISOString()
+          })
+        });
+
+        if (!res.ok) throw new Error('Erro ao chamar');
+
+        const atualizada = await res.json();
+        senhaAtual[guiche] = atualizada;
+
+        document.getElementById(`g${guiche}-numero`).textContent = String(atualizada.numero).padStart(4,'0');
+        document.getElementById(`g${guiche}-tipo`).textContent = atualizada.tipo;
+        document.getElementById(`btn-fin-g${guiche}`).disabled = false;
+
+        // Dispara som (opcional)
+        try {
+          const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleQYqP5/a1qV5Bio/n9rWpXkGKj+f2taleQYqP5/a1qV5Bio/n9rWpXkGKj+f2taleQYqP5/a1qV5Bio/n9rWpXkGKj+f2taleQYqP5/a1qV5Bio/n9rWpXkG');
+          // audio.play(); // descomente se quiser som
+        } catch(e){}
+
+        atualizarFila();
+      } catch (err) {
+        console.error(err);
+        alert('Erro ao chamar senha. Verifique a API.');
+        btn.disabled = false;
+      }
+      btn.textContent = 'Chamar Próxima';
+    }
+
+    async function finalizar(guiche) {
+      if (!senhaAtual[guiche]) return;
+
+      try {
+        const s = senhaAtual[guiche];
+        await fetch(`${API}/${s.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...s,
+            status: 'atendido'
+          })
+        });
+
+        senhaAtual[guiche] = null;
+        document.getElementById(`g${guiche}-numero`).textContent = '—';
+        document.getElementById(`g${guiche}-tipo`).textContent = 'Nenhuma senha chamada';
+        document.getElementById(`btn-g${guiche}`).disabled = false;
+        document.getElementById(`btn-fin-g${guiche}`).disabled = true;
+
+        atualizarFila();
+      } catch (err) {
+        console.error(err);
+        alert('Erro ao finalizar.');
+      }
+    }
+
+    // Atualiza a cada 3 segundos
+    atualizarFila();
+    setInterval(atualizarFila, 3000);
+  </script>
+</body>
+</html>

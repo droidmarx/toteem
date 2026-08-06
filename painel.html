@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Senhas - Somos do Bem</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(160deg, #0f2027, #203a43, #2c5364);
+      color: white;
+      min-height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .top-bar {
+      background: rgba(0,0,0,0.35);
+      padding: 18px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .brand-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #f9c74f, #90be6d, #4d908e, #577590, #9b5de5);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.4rem;
+    }
+    .brand-text h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    .brand-text p {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .clock {
+      font-size: 1.6rem;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+    }
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      position: relative;
+    }
+    .label {
+      font-size: 1.4rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      opacity: 0.7;
+      margin-bottom: 20px;
+    }
+    .senha-box {
+      background: rgba(255,255,255,0.08);
+      border: 3px solid rgba(255,255,255,0.2);
+      border-radius: 30px;
+      padding: 40px 80px;
+      text-align: center;
+      min-width: 420px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      transition: all 0.4s ease;
+    }
+    .senha-box.highlight {
+      border-color: #4caf50;
+      box-shadow: 0 0 40px rgba(76,175,80,0.4), 0 20px 60px rgba(0,0,0,0.4);
+      transform: scale(1.03);
+    }
+    .numero {
+      font-size: 7rem;
+      font-weight: 800;
+      letter-spacing: 8px;
+      line-height: 1;
+      margin: 10px 0;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .tipo {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #90caf9;
+      margin-top: 10px;
+      max-width: 500px;
+    }
+    .guiche-info {
+      margin-top: 30px;
+      font-size: 2.2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .guiche-badge {
+      background: #e94560;
+      padding: 8px 28px;
+      border-radius: 50px;
+      font-size: 1.8rem;
+    }
+    .historico {
+      position: absolute;
+      bottom: 30px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      padding: 0 20px;
+    }
+    .hist-item {
+      background: rgba(0,0,0,0.3);
+      border-radius: 12px;
+      padding: 12px 22px;
+      text-align: center;
+      min-width: 140px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .hist-item .n {
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+    .hist-item .g {
+      font-size: 0.85rem;
+      opacity: 0.7;
+      margin-top: 2px;
+    }
+    .sem-senha {
+      font-size: 2rem;
+      opacity: 0.5;
+    }
+    .pulse {
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <div class="brand">
+      <div class="brand-icon">S</div>
+      <div class="brand-text">
+        <h1>Somos do Bem</h1>
+        <p>Associação Beneficente</p>
+      </div>
+    </div>
+    <div class="clock" id="clock">--:--</div>
+  </div>
+
+  <div class="main">
+    <div class="label">Senha chamada</div>
+
+    <div class="senha-box" id="senhaBox">
+      <div id="conteudo">
+        <div class="sem-senha">Aguardando chamada...</div>
+      </div>
+    </div>
+
+    <div class="historico" id="historico"></div>
+  </div>
+
+  <script>
+    const API = 'https://698deef5aded595c25308ea0.mockapi.io/senhas';
+    let ultimaChamadaId = null;
+    let historico = [];
+
+    function atualizarRelogio() {
+      const agora = new Date();
+      document.getElementById('clock').textContent = agora.toLocaleTimeString('pt-BR', {
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+      });
+    }
+    setInterval(atualizarRelogio, 1000);
+    atualizarRelogio();
+
+    async function buscarUltimaChamada() {
+      try {
+        // Busca senhas com status "chamado", ordenadas pela mais recente
+        const res = await fetch(API + '?status=chamado&sortBy=chamadoEm&order=desc');
+        if (!res.ok) return;
+        const data = await res.json();
+
+        if (data.length === 0) {
+          // Se não tem nenhuma chamada ativa, mostra mensagem
+          if (!ultimaChamadaId) {
+            document.getElementById('conteudo').innerHTML = '<div class="sem-senha">Aguardando chamada...</div>';
+            document.getElementById('senhaBox').classList.remove('highlight');
+          }
+          return;
+        }
+
+        // Pega a mais recente
+        const chamada = data[0];
+
+        if (chamada.id !== ultimaChamadaId) {
+          ultimaChamadaId = chamada.id;
+
+          // Atualiza o painel principal
+          document.getElementById('conteudo').innerHTML = `
+            <div class="numero pulse">${String(chamada.numero).padStart(4, '0')}</div>
+            <div class="tipo">${chamada.tipo}</div>
+            <div class="guiche-info">
+              Dirija-se ao
+              <span class="guiche-badge">Guichê ${chamada.guiche}</span>
+            </div>
+          `;
+
+          const box = document.getElementById('senhaBox');
+          box.classList.add('highlight');
+          setTimeout(() => box.classList.remove('highlight'), 3000);
+
+          // Adiciona ao histórico (mantém últimos 4)
+          historico.unshift({
+            numero: chamada.numero,
+            guiche: chamada.guiche,
+            tipo: chamada.tipo
+          });
+          if (historico.length > 4) historico.pop();
+          renderHistorico();
+        }
+      } catch (e) {
+        console.warn('Erro ao buscar chamada', e);
+      }
+    }
+
+    function renderHistorico() {
+      const el = document.getElementById('historico');
+      el.innerHTML = historico.map(h => `
+        <div class="hist-item">
+          <div class="n">${String(h.numero).padStart(4, '0')}</div>
+          <div class="g">Guichê ${h.guiche}</div>
+        </div>
+      `).join('');
+    }
+
+    // Polling a cada 2 segundos
+    buscarUltimaChamada();
+    setInterval(buscarUltimaChamada, 2000);
+  </script>
+</body>
+</html>
