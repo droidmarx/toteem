@@ -211,17 +211,23 @@
   </div>
 
   <script>
-    const API = 'https://698deef5aded595c25308ea0.mockapi.io/senhas';
+    const API = 'https://698deef5aded595c25308e9f.mockapi.io/Senhas';
     let senhaAtual = { 1: null, 2: null };
+
+    // Neste projeto o MockAPI retorna "Id" (maiúsculo)
+    function getId(item) {
+      return item.Id || item.id;
+    }
 
     async function fetchSenhas() {
       try {
         const res = await fetch(API + '?sortBy=numero&order=asc');
-        if (!res.ok) throw new Error('API error');
+        if (!res.ok) throw new Error('API error ' + res.status);
         document.getElementById('api-status').textContent = 'Conectado';
         document.getElementById('api-status').className = 'online';
         return await res.json();
       } catch (e) {
+        console.error(e);
         document.getElementById('api-status').textContent = 'Offline / Erro';
         document.getElementById('api-status').className = '';
         return [];
@@ -278,8 +284,10 @@
           return;
         }
 
+        const id = getId(proxima);
+
         // Atualiza a senha na API
-        const res = await fetch(`${API}/${proxima.id}`, {
+        const res = await fetch(`${API}/${id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -290,7 +298,10 @@
           })
         });
 
-        if (!res.ok) throw new Error('Erro ao chamar');
+        if (!res.ok) {
+          const t = await res.text();
+          throw new Error('Erro ao chamar: ' + res.status + ' ' + t);
+        }
 
         const atualizada = await res.json();
         senhaAtual[guiche] = atualizada;
@@ -299,16 +310,10 @@
         document.getElementById(`g${guiche}-tipo`).textContent = atualizada.tipo;
         document.getElementById(`btn-fin-g${guiche}`).disabled = false;
 
-        // Dispara som (opcional)
-        try {
-          const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleQYqP5/a1qV5Bio/n9rWpXkGKj+f2taleQYqP5/a1qV5Bio/n9rWpXkGKj+f2taleQYqP5/a1qV5Bio/n9rWpXkGKj+f2taleQYqP5/a1qV5Bio/n9rWpXkG');
-          // audio.play(); // descomente se quiser som
-        } catch(e){}
-
         atualizarFila();
       } catch (err) {
         console.error(err);
-        alert('Erro ao chamar senha. Verifique a API.');
+        alert('Erro ao chamar senha: ' + err.message);
         btn.disabled = false;
       }
       btn.textContent = 'Chamar Próxima';
@@ -319,7 +324,9 @@
 
       try {
         const s = senhaAtual[guiche];
-        await fetch(`${API}/${s.id}`, {
+        const id = getId(s);
+
+        await fetch(`${API}/${id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -337,7 +344,7 @@
         atualizarFila();
       } catch (err) {
         console.error(err);
-        alert('Erro ao finalizar.');
+        alert('Erro ao finalizar: ' + err.message);
       }
     }
 

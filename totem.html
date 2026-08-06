@@ -183,7 +183,7 @@
   </div>
 
   <script>
-    const API = 'https://698deef5aded595c25308ea0.mockapi.io/senhas';
+    const API = 'https://698deef5aded595c25308e9f.mockapi.io/Senhas';
 
     // Contador local por tipo (fallback se API falhar no GET)
     const contadores = {
@@ -203,7 +203,7 @@
           }
         }
       } catch (e) {
-        console.warn('API offline, usando contador local');
+        console.warn('API offline, usando contador local', e);
       }
       // Fallback local
       contadores[tipo] = (contadores[tipo] || 1000) + 1;
@@ -213,7 +213,9 @@
     async function gerarSenha(tipo) {
       const btns = document.querySelectorAll('.btn');
       btns.forEach(b => b.disabled = true);
-      document.getElementById('statusMsg').textContent = 'Gerando senha...';
+      const statusEl = document.getElementById('statusMsg');
+      statusEl.textContent = 'Gerando senha...';
+      statusEl.style.color = '#2e7d32';
 
       try {
         const numero = await obterProximoNumero(tipo);
@@ -238,7 +240,10 @@
           body: JSON.stringify(payload)
         });
 
-        if (!res.ok) throw new Error('Erro ao salvar na API');
+        if (!res.ok) {
+          const errText = await res.text();
+          throw new Error(`API ${res.status}: ${errText}`);
+        }
 
         const senha = await res.json();
 
@@ -247,24 +252,22 @@
         document.getElementById('previewNumero').textContent = String(numero).padStart(4, '0');
         document.getElementById('previewInfo').textContent = `${dataHora} · SisHOSP`;
         document.getElementById('ticketPreview').classList.add('show');
-        document.getElementById('statusMsg').textContent = 'Senha gerada com sucesso!';
+        statusEl.textContent = 'Senha gerada com sucesso!';
+        statusEl.style.color = '#2e7d32';
 
-        // Simula impressão
-        console.log('=== SENHA IMPRESSA ===');
-        console.log(tipo);
-        console.log(String(numero).padStart(4, '0'));
-        console.log(dataHora);
+        console.log('=== SENHA IMPRESSA ===', senha);
 
       } catch (err) {
         console.error(err);
-        document.getElementById('statusMsg').textContent = 'Erro ao gerar senha. Verifique a API.';
-        document.getElementById('statusMsg').style.color = '#c62828';
+        statusEl.textContent = 'Erro: ' + (err.message || 'Falha ao gerar senha');
+        statusEl.style.color = '#c62828';
       } finally {
         btns.forEach(b => b.disabled = false);
         setTimeout(() => {
-          document.getElementById('statusMsg').textContent = '';
-          document.getElementById('statusMsg').style.color = '#2e7d32';
-        }, 4000);
+          if (statusEl.style.color !== '#c62828') {
+            statusEl.textContent = '';
+          }
+        }, 5000);
       }
     }
   </script>

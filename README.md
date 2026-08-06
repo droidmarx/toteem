@@ -13,11 +13,11 @@ Sistema completo em HTML5 com 3 telas que se comunicam via **MockAPI**.
 ## Configuração do MockAPI (obrigatório)
 
 1. Acesse o projeto:  
-   https://mockapi.io/projects/698deef5aded595c25308ea0
+   https://mockapi.io/projects/698deef5aded595c25308e9f
 
 2. Clique em **+ New Resource**
 
-3. Nome do resource: **`senhas`**
+3. Nome do resource: **`Senhas`**
 
 4. Adicione os campos abaixo (clique em **Add field**):
 
@@ -35,7 +35,7 @@ Sistema completo em HTML5 com 3 telas que se comunicam via **MockAPI**.
 Pronto! A API estará disponível em:
 
 ```
-https://698deef5aded595c25308ea0.mockapi.io/senhas
+https://698deef5aded595c25308e9f.mockapi.io/Senhas
 ```
 
 ## Como usar

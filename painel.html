@@ -180,9 +180,14 @@
   </div>
 
   <script>
-    const API = 'https://698deef5aded595c25308ea0.mockapi.io/senhas';
+    const API = 'https://698deef5aded595c25308e9f.mockapi.io/Senhas';
     let ultimaChamadaId = null;
     let historico = [];
+
+    // Neste projeto o MockAPI retorna "Id" (maiúsculo)
+    function getId(item) {
+      return item.Id || item.id;
+    }
 
     function atualizarRelogio() {
       const agora = new Date();
@@ -211,9 +216,10 @@
 
         // Pega a mais recente
         const chamada = data[0];
+        const chamadaId = getId(chamada);
 
-        if (chamada.id !== ultimaChamadaId) {
-          ultimaChamadaId = chamada.id;
+        if (chamadaId !== ultimaChamadaId) {
+          ultimaChamadaId = chamadaId;
 
           // Atualiza o painel principal
           document.getElementById('conteudo').innerHTML = `
