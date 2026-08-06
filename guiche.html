@@ -15,7 +15,7 @@
     }
     .header {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 24px;
       padding-top: 10px;
     }
     .header h1 {
@@ -108,6 +108,25 @@
       background: #555;
       cursor: not-allowed;
     }
+    .btn-recall {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border: 2px solid #ff9800;
+      border-radius: 12px;
+      background: transparent;
+      color: #ff9800;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-recall:hover { background: rgba(255,152,0,0.15); }
+    .btn-recall:disabled {
+      border-color: #555;
+      color: #555;
+      cursor: not-allowed;
+    }
     .btn-finalizar {
       width: 100%;
       padding: 12px;
@@ -154,17 +173,38 @@
       font-size: 0.9rem;
       color: #ddd;
     }
-    .fila-item.prioridade {
-      border: 1px solid #e94560;
-      color: #ff8a80;
-    }
     .status-bar {
       text-align: center;
-      margin-top: 20px;
+      margin-top: 18px;
       font-size: 0.85rem;
       color: #888;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
     }
     .online { color: #4caf50; }
+    .btn-limpar {
+      padding: 8px 16px;
+      border: 1px solid #666;
+      border-radius: 8px;
+      background: transparent;
+      color: #aaa;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .btn-limpar:hover {
+      border-color: #e94560;
+      color: #e94560;
+    }
+    .storage-info {
+      font-size: 0.8rem;
+      color: #888;
+    }
   </style>
 </head>
 <body>
@@ -183,6 +223,7 @@
         <div class="tipo" id="g1-tipo">Nenhuma senha chamada</div>
       </div>
       <button class="btn-chamar" id="btn-g1" onclick="chamarProxima(1)">Chamar Próxima</button>
+      <button class="btn-recall" id="btn-rec-g1" onclick="chamarNovamente(1)" disabled>🔔 Chamar Novamente</button>
       <button class="btn-finalizar" id="btn-fin-g1" onclick="finalizar(1)" disabled>Finalizar Atendimento</button>
     </div>
 
@@ -195,6 +236,7 @@
         <div class="tipo" id="g2-tipo">Nenhuma senha chamada</div>
       </div>
       <button class="btn-chamar" id="btn-g2" onclick="chamarProxima(2)">Chamar Próxima</button>
+      <button class="btn-recall" id="btn-rec-g2" onclick="chamarNovamente(2)" disabled>🔔 Chamar Novamente</button>
       <button class="btn-finalizar" id="btn-fin-g2" onclick="finalizar(2)" disabled>Finalizar Atendimento</button>
     </div>
   </div>
@@ -207,14 +249,22 @@
   </div>
 
   <div class="status-bar">
-    Status: <span id="api-status" class="online">Conectado</span> · Atualiza a cada 3s
+    <div>
+      Status: <span id="api-status" class="online">Conectado</span>
+      · <span class="storage-info" id="storage-info">— registros</span>
+    </div>
+    <button class="btn-limpar" onclick="limparAtendidos()" title="Apaga senhas já finalizadas para liberar espaço no MockAPI (limite 100)">
+      🗑 Limpar atendidos
+    </button>
   </div>
 
   <script>
     const API = 'https://698deef5aded595c25308e9f.mockapi.io/Senhas';
+    const LIMITE_MOCK = 100;
+    const LIMITE_ALERTA = 85; // começa a limpar sozinho acima disso
+
     let senhaAtual = { 1: null, 2: null };
 
-    // Neste projeto o MockAPI retorna "Id" (maiúsculo)
     function getId(item) {
       return item.Id || item.id;
     }
@@ -234,8 +284,28 @@
       }
     }
 
+    function atualizarBotoes(guiche) {
+      const temSenha = !!senhaAtual[guiche];
+      document.getElementById(`btn-g${guiche}`).disabled = temSenha;
+      document.getElementById(`btn-rec-g${guiche}`).disabled = !temSenha;
+      document.getElementById(`btn-fin-g${guiche}`).disabled = !temSenha;
+    }
+
     async function atualizarFila() {
       const senhas = await fetchSenhas();
+      const total = senhas.length;
+      document.getElementById('storage-info').textContent = `${total} / ${LIMITE_MOCK} registros`;
+
+      // Auto-limpeza se estiver perto do limite
+      if (total >= LIMITE_ALERTA) {
+        const atendidos = senhas.filter(s => s.status === 'atendido');
+        if (atendidos.length > 10) {
+          console.log('Limite próximo — limpando atendidos antigos...');
+          await limparAtendidos(true); // silent
+          return; // vai atualizar de novo
+        }
+      }
+
       const aguardando = senhas.filter(s => s.status === 'aguardando');
       const lista = document.getElementById('lista-fila');
       document.getElementById('qtd-fila').textContent = aguardando.length;
@@ -248,20 +318,18 @@
         ).join('');
       }
 
-      // Atualiza painel dos guichês se já tem senha chamada
-      for (let g of [1,2]) {
+      // Sincroniza senhas "chamado" nos guichês
+      for (let g of [1, 2]) {
         const atual = senhas.find(s => s.guiche == g && s.status === 'chamado');
         if (atual) {
           senhaAtual[g] = atual;
           document.getElementById(`g${g}-numero`).textContent = String(atual.numero).padStart(4,'0');
           document.getElementById(`g${g}-tipo`).textContent = atual.tipo;
-          document.getElementById(`btn-g${g}`).disabled = true;
-          document.getElementById(`btn-fin-g${g}`).disabled = false;
+          atualizarBotoes(g);
         } else if (!senhaAtual[g]) {
           document.getElementById(`g${g}-numero`).textContent = '—';
           document.getElementById(`g${g}-tipo`).textContent = 'Nenhuma senha chamada';
-          document.getElementById(`btn-g${g}`).disabled = false;
-          document.getElementById(`btn-fin-g${g}`).disabled = true;
+          atualizarBotoes(g);
         }
       }
     }
@@ -275,7 +343,7 @@
         const senhas = await fetchSenhas();
         const proxima = senhas
           .filter(s => s.status === 'aguardando')
-          .sort((a,b) => Number(a.numero) - Number(b.numero))[0];
+          .sort((a, b) => Number(a.numero) - Number(b.numero))[0];
 
         if (!proxima) {
           alert('Não há senhas na fila!');
@@ -285,8 +353,6 @@
         }
 
         const id = getId(proxima);
-
-        // Atualiza a senha na API
         const res = await fetch(`${API}/${id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -308,8 +374,7 @@
 
         document.getElementById(`g${guiche}-numero`).textContent = String(atualizada.numero).padStart(4,'0');
         document.getElementById(`g${guiche}-tipo`).textContent = atualizada.tipo;
-        document.getElementById(`btn-fin-g${guiche}`).disabled = false;
-
+        atualizarBotoes(guiche);
         atualizarFila();
       } catch (err) {
         console.error(err);
@@ -317,6 +382,48 @@
         btn.disabled = false;
       }
       btn.textContent = 'Chamar Próxima';
+    }
+
+    // Rechama a senha atual (atualiza chamadoEm para o painel tocar de novo)
+    async function chamarNovamente(guiche) {
+      if (!senhaAtual[guiche]) return;
+
+      const btn = document.getElementById(`btn-rec-g${guiche}`);
+      btn.disabled = true;
+      btn.textContent = 'Chamando...';
+
+      try {
+        const s = senhaAtual[guiche];
+        const id = getId(s);
+
+        const res = await fetch(`${API}/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...s,
+            status: 'chamado',
+            guiche: guiche,
+            chamadoEm: new Date().toISOString() // novo timestamp → painel detecta e toca som
+          })
+        });
+
+        if (!res.ok) throw new Error('Erro ' + res.status);
+
+        const atualizada = await res.json();
+        senhaAtual[guiche] = atualizada;
+
+        // Feedback visual rápido
+        const numEl = document.getElementById(`g${guiche}-numero`);
+        numEl.style.color = '#ff9800';
+        setTimeout(() => { numEl.style.color = '#fff'; }, 800);
+
+      } catch (err) {
+        console.error(err);
+        alert('Erro ao chamar novamente: ' + err.message);
+      }
+
+      btn.disabled = false;
+      btn.textContent = '🔔 Chamar Novamente';
     }
 
     async function finalizar(guiche) {
@@ -338,9 +445,7 @@
         senhaAtual[guiche] = null;
         document.getElementById(`g${guiche}-numero`).textContent = '—';
         document.getElementById(`g${guiche}-tipo`).textContent = 'Nenhuma senha chamada';
-        document.getElementById(`btn-g${guiche}`).disabled = false;
-        document.getElementById(`btn-fin-g${guiche}`).disabled = true;
-
+        atualizarBotoes(guiche);
         atualizarFila();
       } catch (err) {
         console.error(err);
@@ -348,7 +453,42 @@
       }
     }
 
-    // Atualiza a cada 3 segundos
+    // Apaga registros com status "atendido" para liberar espaço (limite 100 do MockAPI)
+    async function limparAtendidos(silent = false) {
+      try {
+        const senhas = await fetchSenhas();
+        const atendidos = senhas.filter(s => s.status === 'atendido');
+
+        if (atendidos.length === 0) {
+          if (!silent) alert('Não há senhas atendidas para limpar.');
+          return;
+        }
+
+        if (!silent) {
+          const ok = confirm(`Apagar ${atendidos.length} senha(s) já finalizada(s)?\nIsso libera espaço no MockAPI (limite de 100).`);
+          if (!ok) return;
+        }
+
+        // Apaga em paralelo (lotes de 5 para não sobrecarregar)
+        const lote = 5;
+        for (let i = 0; i < atendidos.length; i += lote) {
+          const batch = atendidos.slice(i, i + lote);
+          await Promise.all(batch.map(s =>
+            fetch(`${API}/${getId(s)}`, { method: 'DELETE' })
+          ));
+        }
+
+        if (!silent) {
+          alert(`${atendidos.length} registro(s) removido(s). Espaço liberado!`);
+        }
+        atualizarFila();
+      } catch (err) {
+        console.error(err);
+        if (!silent) alert('Erro ao limpar: ' + err.message);
+      }
+    }
+
+    // Inicialização
     atualizarFila();
     setInterval(atualizarFila, 3000);
   </script>

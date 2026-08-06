@@ -235,7 +235,7 @@
 
   <script>
     const API = 'https://698deef5aded595c25308e9f.mockapi.io/Senhas';
-    let ultimaChamadaId = null;
+    let ultimaChamadaKey = null; // id + chamadoEm (permite rechamada)
 
     // Histórico por tipo (máx 5 cada)
     const historicoPorTipo = {
@@ -396,7 +396,7 @@
         const data = await res.json();
 
         if (data.length === 0) {
-          if (!ultimaChamadaId) {
+          if (!ultimaChamadaKey) {
             document.getElementById('conteudo').innerHTML = '<div class="sem-senha">Aguardando chamada...</div>';
             document.getElementById('senhaBox').classList.remove('highlight');
           }
@@ -404,10 +404,10 @@
         }
 
         const chamada = data[0];
-        const chamadaId = getId(chamada);
+        const chamadaKey = getId(chamada) + "|" + (chamada.chamadoEm || "");
 
-        if (chamadaId !== ultimaChamadaId) {
-          ultimaChamadaId = chamadaId;
+        if (chamadaKey !== ultimaChamadaKey) {
+          ultimaChamadaKey = chamadaKey;
 
           // Atualiza painel
           document.getElementById('conteudo').innerHTML = `
